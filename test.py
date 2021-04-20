@@ -5,10 +5,11 @@ import time
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):#inherit class -  socketserver.BaseRequestHandler
 
     def handle(self):
-        data = str(self.request.recv(1024), 'ascii')
-        cur_thread = threading.current_thread()
-        response = bytes("{}: {}".format(cur_thread.name, data), 'ascii')
-        self.request.sendall(response)
+        while True:
+            data = str(self.request.recv(1024), 'ascii')
+            cur_thread = threading.current_thread()
+            response = bytes("{}: {}".format(cur_thread.name, data), 'ascii')
+            self.request.sendall(response)
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
