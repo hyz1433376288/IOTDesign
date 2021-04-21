@@ -1,5 +1,5 @@
 import random
-class encode:
+class Encode:
     msg = ""
     temperature_cnt = 0
     humidity_cnt = 0
@@ -66,14 +66,8 @@ class encode:
         self.msg = self.msg[self.temperature_cnt * 3 + self.humidity_cnt * 2 + 2:]
         self.msg = new_temp_humi + self.msg
         print(self.msg)
+        return self.msg
 
 
 
 
-d = encode(temperature_cnt=2
-                    ,humidity_cnt=1
-                    ,airconditioner_cnt=2
-                    ,light_turn_cnt=2
-                    ,light_adjust_cnt=2
-                    ,window_cnt=1)
-d.encode()

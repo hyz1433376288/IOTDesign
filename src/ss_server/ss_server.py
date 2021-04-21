@@ -2,6 +2,10 @@ import socket
 import threading
 import socketserver
 import time
+import ServerDo
+import include.Decode
+import include.Encode
+
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):#inherit class -  socketserver.BaseRequestHandler
 
     def handle(self):
@@ -9,16 +13,19 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):#inherit class 
             data = str(self.request.recv(1024), 'ascii')
             print(data)
             cur_thread = threading.current_thread()
-            response = bytes("{}: {}".format(cur_thread.name, data), 'ascii')
-            print(response)
+            print(cur_thread.name)
+            response = ""
+            if ServerDo.listen_web():
+                pass
+            else:
+                response = "#"
             self.request.sendall(response)
+            time.sleep(1)
 
 
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
-
-
 
 if __name__ == "__main__":
     # Port 0 means to select an arbitrary unused port

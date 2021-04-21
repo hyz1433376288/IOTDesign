@@ -2,7 +2,6 @@ import socket
 import threading
 import socketserver
 import time
-
 def client(ip, port, message):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
 

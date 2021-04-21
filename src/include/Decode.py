@@ -1,4 +1,4 @@
-class decode:
+class Decode:
 
     msg = "" #recieved string from client
     src_addr = "" #client head
@@ -99,10 +99,10 @@ class decode:
         self.scan_light_adjust()
         self.scan_window()
 
-s = decode("abcdef127000000001202205629989283697378211209909811",6,12)
-print("mac = ",s.src_addr)
-print("des = ",s.des_addr)
-s.decode()
+# s = Decode("axb56y1270000000012058020177206146284211208703010",6,12)
+# s.decode()
+# print("mac = ",s.src_addr)
+# print("des = ",s.des_addr)
 
 
 
