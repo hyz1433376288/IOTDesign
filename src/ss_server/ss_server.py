@@ -9,7 +9,10 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):#inherit class 
             data = str(self.request.recv(1024), 'ascii')
             cur_thread = threading.current_thread()
             response = bytes("{}: {}".format(cur_thread.name, data), 'ascii')
+            print(response)
             self.request.sendall(response)
+
+
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
