@@ -2,5 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/gitclone/Greenhouse" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/gitclone/Greenhouse/templates/RemoteMonitor" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/gitclone/RemoteMonitor" vcs="Git" />
   </component>
 </project>

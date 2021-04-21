@@ -1,4 +1,4 @@
-class ScanMsg:
+class decode:
 
     msg = "" #recieved string from client
     src_addr = "" #client head
@@ -90,7 +90,7 @@ class ScanMsg:
         self.window_cnt = self.scan_forward(1)
         for i in range(0, self.window_cnt):
             self.window.append(self.scan_forward(1))
-    def run(self):
+    def decode(self):
         self.scan_address()
         self.scan_temperature()
         self.scan_humidity()
@@ -98,10 +98,11 @@ class ScanMsg:
         self.scan_light_turn()
         self.scan_light_adjust()
         self.scan_window()
-s = ScanMsg("abcdef127000000001202205629989283697378211209909811",6,12)
+
+s = decode("abcdef127000000001202205629989283697378211209909811",6,12)
 print("mac = ",s.src_addr)
 print("des = ",s.des_addr)
-s.run()
+s.decode()
 
 
 
