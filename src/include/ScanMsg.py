@@ -28,10 +28,13 @@ class ScanMsg:
     window = []
 
     msg_ptr = 0
-    def __init__(self, msg):
+    def __init__(self, msg, srclen, deslen):
         self.msg = msg
+        self.SRC_ADDR_LEN = srclen
+        self.DES_ADDR_LEN = deslen
 
     def scan_address(self):
+        # can not invoke scan_forward() ,because addr is not integer
         self.src_addr = self.msg[self.msg_ptr:self.SRC_ADDR_LEN]
         self.msg_ptr += self.SRC_ADDR_LEN
         self.des_addr = self.msg[self.msg_ptr:self.msg_ptr + self.DES_ADDR_LEN]
@@ -68,6 +71,7 @@ class ScanMsg:
             temperature = self.scan_forward(2)
             wind = self.scan_forward(1)
             self.airconditioner.append(self.airCdt(mode, temperature, wind))
+            print(self.airconditioner[-1])
 
     def scan_light_turn(self):
         print("light_turn")
@@ -94,7 +98,7 @@ class ScanMsg:
         self.scan_light_turn()
         self.scan_light_adjust()
         self.scan_window()
-s = ScanMsg("abcdef127000000001202205629989")
+s = ScanMsg("abcdef127000000001202205629989283697378211209909811",6,12)
 print("mac = ",s.src_addr)
 print("des = ",s.des_addr)
 s.run()
