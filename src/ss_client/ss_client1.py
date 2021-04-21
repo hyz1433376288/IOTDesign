@@ -18,5 +18,5 @@ def client(ip, port, message):
 
 ip, port = "localhost", 6999
 
-client(ip, port, "subtest 1")
+client(ip, port, "my mac = ffff")
 

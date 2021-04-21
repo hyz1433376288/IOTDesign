@@ -7,6 +7,7 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):#inherit class 
     def handle(self):
         while True:
             data = str(self.request.recv(1024), 'ascii')
+            print(data)
             cur_thread = threading.current_thread()
             response = bytes("{}: {}".format(cur_thread.name, data), 'ascii')
             print(response)
