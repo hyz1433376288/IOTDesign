@@ -20,15 +20,16 @@ def isExisted(username,password):
     return True
 def convert_hashpwd():
   sql="select iot_password from iot_user"
+  cur=conn.cursor()
   cur.execute(sql)
-  result=cur.fetchall()
+  result = cur.fetchall()
   hashpwd=[]
   for i in range(0,len(result)):
     print(i)
     hashpwd.append(generate_password_hash(result[i][0]))
-    sql="UPDATE iot_user  SET iot_password='hashpwd[i]' where iot_uid='%d'"%(i+1)
+    sql="UPDATE iot_user  SET iot_password={value1} where iot_uid={value2}".format(value1="15",value2=i+1)
     cur.execute(sql)
-    print(sql)
-    print(hashpwd[i])
+  conn.commit()
+  conn.close()
 if __name__=="__main__":
   convert_hashpwd()
