@@ -1,3 +1,4 @@
+import json
 class Decode:
 
     msg = "" #recieved string from client
@@ -98,6 +99,24 @@ class Decode:
         self.scan_light_turn()
         self.scan_light_adjust()
         self.scan_window()
+        # return format as json()
+        data = {
+            'src_addr':self.src_addr,
+            'des_addr':self.des_addr,
+            'temperature_cnt':self.temperature_cnt,
+            'temperature':self.temperature,
+            'humidity_cnt':self.humidity_cnt,
+            'humidity':self.humidity,
+            'airconditioner_cnt':self.airconditioner_cnt,
+            'airconditioner':self.airconditioner,
+            'light_turn_cnt':self.light_turn_cnt,
+            'light_turn':self.light_turn,
+            'light_adjust_cnt':self.light_adjust_cnt,
+            'light_adjust':self.light_adjust,
+            'window_cnt':self.window_cnt,
+            'window':self.window
+        }
+        return
 
 # s = Decode("axb56y1270000000012058020177206146284211208703010",6,12)
 # s.decode()

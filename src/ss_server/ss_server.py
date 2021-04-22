@@ -19,7 +19,7 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):#inherit class 
                 pass
             else:
                 response = "#"
-            self.request.sendall(response)
+            self.request.sendall(bytes(response, 'ascii'))
             time.sleep(1)
 
 

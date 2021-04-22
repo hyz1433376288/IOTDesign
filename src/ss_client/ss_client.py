@@ -6,7 +6,7 @@ import ClientDo
 import include.Encode
 import include.Decode
 
-def client(ip, port):
+def client(ip, port, mac):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
 
         sock.connect((ip, port))
@@ -16,7 +16,7 @@ def client(ip, port):
              , light_turn_cnt=2
              , light_adjust_cnt=2
              , window_cnt=1)
-        mac = "axb56y"
+        mac = mac
         host = "127000000001"
         message = ClientDo.set_msg(mac=mac, host=host, data=enc.msg)
 
@@ -34,7 +34,7 @@ def client(ip, port):
             message = nextmsg
             time.sleep(1)
 
-ip, port = "localhost", 6999
+ip, port, mac= "localhost", 6999, "axb56y"
 
-client(ip, port)
+client(ip="localhost", port=6999, mac = "axb56y")
 
