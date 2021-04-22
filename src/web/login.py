@@ -26,4 +26,4 @@ def login():
     return render_template("login.html", form=myForm)
 
 if __name__=="__main__":
-   app.run(host='49.234.72.229',port=3306,debug=True)
+   app.run(debug=True)
