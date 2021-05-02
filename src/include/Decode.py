@@ -27,13 +27,15 @@ class Decode:
     light_adjust = []
     window_cnt = 0
     window = []
-
+    j_data = {}
     msg_ptr = 0
     def __init__(self, msg, srclen, deslen):
         self.msg = msg
         self.SRC_ADDR_LEN = srclen
         self.DES_ADDR_LEN = deslen
-
+    def set_msg(self, msg):
+        self.msg = msg
+        self.msg_ptr = 0 #reset message ptr
     def scan_address(self):
         # can not invoke scan_forward() ,because addr is not integer
         self.src_addr = self.msg[self.msg_ptr:self.SRC_ADDR_LEN]
@@ -53,40 +55,46 @@ class Decode:
         return res
 
     def scan_temperature(self):
+        self.temperature[:] = []
         self.temperature_cnt = self.scan_forward(1)
         for i in range(0, self.temperature_cnt):
             print("temperature")
             self.temperature.append(self.scan_forward(3))
 
     def scan_humidity(self):
+        self.humidity[:] = []
         self.humidity_cnt = self.scan_forward(1)
         for i in range(0, self.humidity_cnt):
-            print("humidity")
+            print("humidity.txt")
             self.humidity.append(self.scan_forward(2))
 
     def scan_airconditioner(self):
+        self.airconditioner[:] = []
         self.airconditioner_cnt = self.scan_forward(1)
         for i in range(0, self.airconditioner_cnt):
             print("airconditioner")
             mode = self.scan_forward(1)
             temperature = self.scan_forward(2)
             wind = self.scan_forward(1)
-            self.airconditioner.append(self.airCdt(mode, temperature, wind))
+            self.airconditioner.append({'mode':mode,'temperature':temperature,'wind':wind})
             print(self.airconditioner[-1])
 
     def scan_light_turn(self):
+        self.light_turn[:] = []
         print("light_turn")
         self.light_turn_cnt = self.scan_forward(1)
         for i in range(0, self.light_turn_cnt):
             self.light_turn.append(self.scan_forward(1))
 
     def scan_light_adjust(self):
+        self.light_adjust[:] = []
         print("light_adjust")
         self.light_adjust_cnt = self.scan_forward(1)
         for i in range(0, self.light_adjust_cnt):
             self.light_adjust.append(self.scan_forward(3))
 
     def scan_window(self):
+        self.window[:] = []
         print("window")
         self.window_cnt = self.scan_forward(1)
         for i in range(0, self.window_cnt):
@@ -100,23 +108,19 @@ class Decode:
         self.scan_light_adjust()
         self.scan_window()
         # return format as json()
-        data = {
-            'src_addr':self.src_addr,
-            'des_addr':self.des_addr,
-            'temperature_cnt':self.temperature_cnt,
-            'temperature':self.temperature,
-            'humidity_cnt':self.humidity_cnt,
-            'humidity':self.humidity,
-            'airconditioner_cnt':self.airconditioner_cnt,
-            'airconditioner':self.airconditioner,
-            'light_turn_cnt':self.light_turn_cnt,
-            'light_turn':self.light_turn,
-            'light_adjust_cnt':self.light_adjust_cnt,
-            'light_adjust':self.light_adjust,
-            'window_cnt':self.window_cnt,
-            'window':self.window
-        }
-        return
+    def to_json(self):
+        self.j_data['src_addr'] = self.src_addr
+        self.j_data['msg'] = self.msg
+        self.j_data['des_addr'] = self.des_addr
+        self.j_data['temperature'] = self.temperature
+        self.j_data['humidity'] = self.humidity
+        self.j_data['airconditioner'] = self.airconditioner
+        self.j_data['light_turn'] = self.light_turn
+        self.j_data['light_adjust'] = self.light_adjust
+        self.j_data['window'] = self.window
+
+        return self.j_data
+
 
 # s = Decode("axb56y1270000000012058020177206146284211208703010",6,12)
 # s.decode()

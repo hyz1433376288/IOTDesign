@@ -5,20 +5,33 @@ import time
 import ServerDo
 import include.Decode
 import include.Encode
-
+import json
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):#inherit class -  socketserver.BaseRequestHandler
 
     def handle(self):
         while True:
             data = str(self.request.recv(1024), 'ascii')
+            dec = include.Decode.Decode(msg=data, srclen=6, deslen=12)
             print(data)
+            dec.set_msg(data)
+            dec.decode()
+            j_data = dec.to_json()
+            with open("../json/j_data.json", 'r') as load_f:
+                load_dict = json.load(load_f)
+
+            load_dict[j_data['src_addr']] = j_data
+            with open('../json/j_data.json', 'w') as f:
+                json.dump(load_dict, f)
+                print("wrote -> ../include/j_data.json")
+
             cur_thread = threading.current_thread()
             print(cur_thread.name)
-            response = ""
-            if ServerDo.listen_web():
-                pass
-            else:
-                response = "#"
+            response = data
+            # response = ""
+            # if ServerDo.listen_web():
+            #     pass
+            # else:
+            #     response = "#"
             self.request.sendall(bytes(response, 'ascii'))
             time.sleep(1)
 

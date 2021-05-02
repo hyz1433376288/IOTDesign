@@ -34,7 +34,7 @@ def he():
     humidity = arr2[-1]
     templateData = {
         'temperature' : temperature,
-        'humidity' : humidity,
+        'humidity.txt' : humidity,
         'Tarr' : arr1,
         'Harr' : arr2
     }
@@ -56,7 +56,7 @@ def update():
     humidity = arr2[-1]
     templateData = {
         'temperature': temperature,
-        'humidity': humidity,
+        'humidity.txt': humidity,
         'Tarr': arr1,
         'Harr': arr2
     }
@@ -73,7 +73,7 @@ def water():
     humidity = arr2[-1]
     templateData = {
         'temperature': temperature,
-        'humidity': humidity,
+        'humidity.txt': humidity,
         'Tarr': arr1,
         'Harr': arr2
     }

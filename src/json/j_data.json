@@ -1,0 +1,37 @@
+{
+  "axb56y": {
+    "src_addr": "axb56y",
+    "msg": "axb56y1270000000012045030130279508434200206501710",
+    "des_addr": "127000000001",
+    "temperature": [
+      45,
+      30
+    ],
+    "humidity": [
+      30
+    ],
+    "airconditioner": [
+      {
+        "mode": 7,
+        "temperature": 95,
+        "wind": 0
+      },
+      {
+        "mode": 8,
+        "temperature": 43,
+        "wind": 4
+      }
+    ],
+    "light_turn": [
+      0,
+      0
+    ],
+    "light_adjust": [
+      65,
+      17
+    ],
+    "window": [
+      0
+    ]
+  }
+}

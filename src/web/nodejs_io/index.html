@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <p>haha</p>
+
+    <p id="humidity">
+        78.54
+    </p>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io('http://localhost:3000');
+        socket.emit('hehe', {name : 'zs',age :18});
+        // socket.on('send',data => {
+        //     console.log(data);
+        // });
+        socket.on('send', data =>{
+            console.log(data);
+        });
+        document.getElementById('humidity').innerText  = "90.99";
+    </script>
+</body>
+</html>

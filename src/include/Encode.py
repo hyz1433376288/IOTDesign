@@ -56,7 +56,7 @@ class Encode:
 
 
     def encode(self):
-        # update temperature and humidity
+        # update temperature and humidity.txt
         new_temp_humi = ""
         new_temp_humi += str(self.temperature_cnt)
         new_temp_humi += self.__random_data(cnt=self.temperature_cnt, maxv=100, width=3)
@@ -67,7 +67,6 @@ class Encode:
         self.msg = new_temp_humi + self.msg
         print(self.msg)
         return self.msg
-
 
 
 
