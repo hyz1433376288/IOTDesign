@@ -24,6 +24,10 @@ io.on('connection', socket =>{
     //socket.emit 给浏览器发数据，需要触发浏览器注册的某个事件
     // socket.emit('send', {name: 'zs'});
     //socket.on注册事件，如果需要获取浏览器数据，就要注册一个时间，等待浏览器触发
+    const INTERVAL = 2000;//设置每2s读一次
+        setInterval(function () {
+            socket.emit('j_data',"please give me");
+        }, INTERVAL);
     socket.on('j_data', data=>{
         console.log(data);
         socket.emit('send_j_data', read_j_data());
@@ -38,11 +42,12 @@ io.on('connection', socket =>{
         socket.emit('send', data);
     })
 });
-
+var test = 0;
 function read_j_data() {
     const fs = require('fs');
     let rawdata = fs.readFileSync('../../json/j_data.json');
     console.log(rawdata);
+    console.log(test++);
     return JSON.parse(rawdata);
 }
 

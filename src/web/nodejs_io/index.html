@@ -4,24 +4,176 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+<style>
+
+
+.head{
+    background-color: black;
+    margin: 0 auto;
+    height: 50px;
+    text-align: center;
+}
+.head h1{
+    font-size: 30px;
+    color: white;
+}
+
+#canvas{
+    margin: 0 auto;
+    background: #cccccc;
+}
+.chart{
+     white-space: nowrap;
+    background-color: lavender;
+    margin: 10px auto;
+}
+.graph{
+    margin: 0 auto;
+    height: 200px;
+    background-color: #003400;
+    white-space: nowrap;
+    font-size: 0;
+
+}
+.options{
+    white-space: normal;
+    border:1px solid black;
+    font-size: 14px;
+    box-sizing: border-box;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-all;
+    overflow: hidden;
+    display: inline-block;
+    width: 100px;
+    height: 100%;
+    padding-left: -20px;
+    border: 2px solid black;
+}
+.options dd{
+    margin-left: 10px;
+}
+</style>
 <body>
-    <p>haha</p>
+    <div class="head">
+        <h1>Smart Control System</h1>
+    </div>
+    <div id="canvas">
+        <div class="chart">
+            <p>text</p>
+            <div class="graph">
 
-    <p id="humidity">
-        78.54
-    </p>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var socket = io('http://localhost:3000');
-        setInterval(function () { //每5秒刷新一次图表
-         //需要执行的代码写在这里
-            socket.emit('j_data',"please give me");
+            </div>
+            <div class="options">
+                <dl>
+                    <dd ondblclick="ShowElement(this)">test</dd>
+                    <dd ondblclick="ShowElement(this)">test</dd>
+                    <dd ondblclick="ShowElement(this)">test</dd>
+                </dl>
+            </div>
+            dd
+            <div class="options">
+                <dl>
 
-        }, 2000);
-        socket.on('send_j_data', data=>{
-            document.getElementById('humidity').innerText = JSON.stringify(data);
-        })
+                    <dd ondblclick="ShowElement(this)">test</dd>
+                    <dd ondblclick="ShowElement(this)">test</dd>
+                    <dd ondblclick="ShowElement(this)">test</dd>
+                </dl>
+            </div>
+            <button type="submit">Confirm</button>
 
-    </script>
+        </div>
+    </div>
 </body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io('http://localhost:3000');
+    var first = true;
+    const INTERVAL = 2000;
+    setInterval(function () {
+        socket.emit('j_data', "please give me");
+    }, INTERVAL);
+
+    socket.on('send_j_data', json_object => {
+        //The 'json_object' is json object from nodejs
+        // document.getElementById('humidity').innerText = JSON.stringify(json_object);
+        if(first){
+            for (var key in json_object){//key = ax822k
+                document.getElementById('canvas').innerHTML += `<div id="${key}" class="chart"><p>${key}</p><div class="graph"></div></div>`;
+
+                console.log(json_object[key]);
+                for (var kk in json_object[key]){
+                    var len = json_object[key][kk].length;
+
+                    if(kk === "airconditioner"){
+                        document.getElementById(key).innerHTML += '<p>Air-Conditioner</p>'
+                        for(var i=0;i<len;i++){
+                            var opt_text = `<div class="options">The${i}<dl>`;
+                            for(var kkk in json_object[key][kk][i]){
+                                opt_text += `<dt>${kkk}</dt><dd ondblclick=\"ShowElement(this)\">${json_object[key][kk][i][kkk]}</dd>`
+                            }
+                            opt_text += `</dl></div>`;
+                            document.getElementById(key).innerHTML += opt_text;
+                        }
+                    }
+                    else if(kk === "light_turn" || kk === "light_adjust" || kk === 'window' ){
+                        document.getElementById(key).innerHTML += `${kk}：`;
+                        var opt_text = `<div class="options"><dl>`;
+                        for(var i = 0;i<len;i++){
+                            opt_text += `<dt>The${i}</dt>`;
+                            opt_text += `<dd ondblclick=\"ShowElement(this)\">${json_object[key][kk][i]}</dd>`
+                        }
+                        opt_text += `</dl></div>`;
+                        document.getElementById(key).innerHTML += opt_text;
+                    }
+                    else if( kk === 'temperature' || kk === 'humidity'){
+                        document.getElementById(key).innerHTML += `${kk}：`;
+                        opt_text = '';
+                        for(var i = 0;i<len;i++){
+                            opt_text += `The${i} `;
+                            opt_text += `${json_object[key][kk][i]} `
+                        }
+                        document.getElementById(key).innerHTML += opt_text;
+                    }
+                }
+                document.getElementById(key).innerHTML += `<input type="submit" class="${key}" value="Confirm">`;
+            }
+            first = false;
+        }
+        var canvas = document.getElementById('canvas').innerHTML;
+    })
+
+</script>
+<script type="text/javascript" >
+    function ShowElement(element) {
+    var oldhtml = element.innerHTML;
+    //创建新的input元素
+    var newobj = document.createElement('input');
+    //为新增元素添加类型
+    newobj.type = 'text';
+    //为新增元素添加value值
+    newobj.value = oldhtml;
+    //为新增元素添加光标离开事件
+    newobj.onblur = function() {
+        //当触发时判断新增元素值是否为空，为空则不修改，并返回原有值
+        element.innerHTML = this.value == oldhtml ? oldhtml : this.value;
+        //当触发时设置父节点的双击事件为ShowElement、也可在这里进行保存动作
+        element.setAttribute("ondblclick", "ShowElement(this);");
+    }
+    //设置该标签的子节点为空
+    element.innerHTML = '';
+    //添加该标签的子节点，input对象
+    element.appendChild(newobj);
+    //设置选择文本的内容或设置光标位置（两个参数：start,end；start为开始位置，end为结束位置；如果开始位置和结束位置相同则就是光标位置）
+    newobj.setSelectionRange(0, oldhtml.length);
+    //设置获得光标
+    newobj.focus();
+
+    //设置父节点的双击事件为空
+    newobj.parentNode.setAttribute("ondblclick", "");
+
+}
+
+</script>
 </html>
+
