@@ -6,6 +6,9 @@ import ServerDo
 import include.Decode
 import include.Encode
 import json
+import threading
+
+lock = threading.Lock()
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):#inherit class -  socketserver.BaseRequestHandler
 
     def handle(self):
@@ -15,14 +18,15 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):#inherit class 
             print(data)
             dec.set_msg(data)
             dec.decode()
-            j_data = dec.to_json()
-            with open("../json/j_data.json", 'r') as load_f:
-                load_dict = json.load(load_f)
+            with lock:
+                j_data = dec.to_json()
+                with open("../json/j_data.json", 'r') as load_f:
+                    load_dict = json.load(load_f)
 
-            load_dict[j_data['src_addr']] = j_data
-            with open('../json/j_data.json', 'w') as f:
-                json.dump(load_dict, f)
-                print("wrote -> ../include/j_data.json")
+                load_dict[j_data['src_addr']] = j_data
+                with open('../json/j_data.json', 'w') as f:
+                    json.dump(load_dict, f)
+                    print("wrote -> ../include/j_data.json")
 
             cur_thread = threading.current_thread()
             print(cur_thread.name)

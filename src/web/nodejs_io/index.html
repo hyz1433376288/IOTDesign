@@ -100,7 +100,7 @@
         // document.getElementById('humidity').innerText = JSON.stringify(json_object);
         if(first || set){
             for (var key in json_object){//key = ax822k
-                document.getElementById('canvas').innerHTML += `<div id="${key}" class="chart"><p>${key}</p><div class="graph"></div></div>`;
+                document.getElementById('canvas').innerHTML += `<div id="${key}Chart" class="chart"><p>${key}</p><div class="graph"></div></div>`;
 
                 console.log(json_object[key]);
                 for (var kk in json_object[key]){
@@ -110,7 +110,7 @@
                         for(var i=0;i<len;i++){
                             opt_text += `<div class="options">The${i}:<dl>`;
                             for(var kkk in json_object[key][kk][i]){
-                                opt_text += `<dt>${kkk}</dt><dd ondblclick=\"ShowElement(this)\">${json_object[key][kk][i][kkk]}</dd>`
+                                opt_text += `<dt>${kkk}</dt><dd class="${key}${kk}${i}${kkk}" ondblclick=\"ShowElement(this)\">${json_object[key][kk][i][kkk]}</dd>`
                             }
                             opt_text += `</dl></div>`;
                         }
@@ -119,7 +119,7 @@
                         opt_text += `<div class="options"><dl>`;
                         for(var i = 0;i<len;i++){
                             opt_text += `<dt>The${i}:</dt>`;
-                            opt_text += `<dd ondblclick=\"ShowElement(this)\">${json_object[key][kk][i]}</dd>`
+                            opt_text += `<dd class="${key}${kk}${i}" ondblclick=\"ShowElement(this)\">${json_object[key][kk][i]}</dd>`
                         }
                         opt_text += `</dl></div>`;
                     }
@@ -136,9 +136,9 @@
                         continue;
                     }
 
-                    document.getElementById(key).innerHTML += opt_text;
+                    document.getElementById(key+'Chart').innerHTML += opt_text;
                 }
-                document.getElementById(key).innerHTML += `<input type="submit" class="${key}" value="Confirm">`;
+                document.getElementById(key+'Chart').innerHTML += `<input type="submit" class="${key}Confirm" value="Confirm" onclick="confirm('${key}')">`;
             }
             first = false;
         }
@@ -147,7 +147,6 @@
             for (var key in json_object) {//key = ax822k
                 var t = json_object[key].temperature;
                 var h = json_object[key].humidity;
-                console.log(h);
                 //clear old temperature and humidity
                 opt_text = '';
                 for(var i = 0;i<t.length;i++){
@@ -158,7 +157,7 @@
                 opt_text = '';
                 for(var i = 0;i<h.length;i++){
                     opt_text += `The${i}: `;
-                    opt_text += `${h[i]} `
+                    opt_text += `${h[i]} `;
                 }
                 document.getElementById(key+'humidity').innerHTML = opt_text;
 
@@ -166,6 +165,11 @@
         }
     })
 
+</script>
+<script type="text/javascript">
+    function confirm(key) {
+
+    }
 </script>
 <script type="text/javascript" >
     function ShowElement(element) {
