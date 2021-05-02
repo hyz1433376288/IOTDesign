@@ -24,7 +24,10 @@ io.on('connection', socket =>{
     //socket.emit 给浏览器发数据，需要触发浏览器注册的某个事件
     // socket.emit('send', {name: 'zs'});
     //socket.on注册事件，如果需要获取浏览器数据，就要注册一个时间，等待浏览器触发
-
+    socket.on('j_data', data=>{
+        console.log(data);
+        socket.emit('send_j_data', read_j_data());
+    });
     /*
     * socket(string ,data)
     * string : 事件名(任意)
@@ -36,5 +39,11 @@ io.on('connection', socket =>{
     })
 });
 
-const ws = require('worker_threads');
+function read_j_data() {
+    const fs = require('fs');
+    let rawdata = fs.readFileSync('../../json/j_data.json');
+    console.log(rawdata);
+    return JSON.parse(rawdata);
+}
+
 

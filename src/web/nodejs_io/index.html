@@ -13,14 +13,15 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var socket = io('http://localhost:3000');
-        socket.emit('hehe', {name : 'zs',age :18});
-        // socket.on('send',data => {
-        //     console.log(data);
-        // });
-        socket.on('send', data =>{
-            console.log(data);
-        });
-        document.getElementById('humidity').innerText  = "90.99";
+        setInterval(function () { //每5秒刷新一次图表
+         //需要执行的代码写在这里
+            socket.emit('j_data',"please give me");
+
+        }, 2000);
+        socket.on('send_j_data', data=>{
+            document.getElementById('humidity').innerText = JSON.stringify(data);
+        })
+
     </script>
 </body>
 </html>
