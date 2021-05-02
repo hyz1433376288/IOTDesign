@@ -46,6 +46,7 @@ var test = 0;
 function read_j_data() {
     const fs = require('fs');
     let rawdata = fs.readFileSync('../../json/j_data.json');
+
     console.log(rawdata);
     console.log(test++);
     return JSON.parse(rawdata);

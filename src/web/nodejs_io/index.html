@@ -89,7 +89,8 @@
 <script>
     var socket = io('http://localhost:3000');
     var first = true;
-    const INTERVAL = 2000;
+    var set = false;
+    const INTERVAL = 1300;
     setInterval(function () {
         socket.emit('j_data', "please give me");
     }, INTERVAL);
@@ -97,50 +98,72 @@
     socket.on('send_j_data', json_object => {
         //The 'json_object' is json object from nodejs
         // document.getElementById('humidity').innerText = JSON.stringify(json_object);
-        if(first){
+        if(first || set){
             for (var key in json_object){//key = ax822k
                 document.getElementById('canvas').innerHTML += `<div id="${key}" class="chart"><p>${key}</p><div class="graph"></div></div>`;
 
                 console.log(json_object[key]);
                 for (var kk in json_object[key]){
                     var len = json_object[key][kk].length;
-
+                    var opt_text = kk+":";
                     if(kk === "airconditioner"){
-                        document.getElementById(key).innerHTML += '<p>Air-Conditioner</p>'
                         for(var i=0;i<len;i++){
-                            var opt_text = `<div class="options">The${i}<dl>`;
+                            opt_text += `<div class="options">The${i}:<dl>`;
                             for(var kkk in json_object[key][kk][i]){
                                 opt_text += `<dt>${kkk}</dt><dd ondblclick=\"ShowElement(this)\">${json_object[key][kk][i][kkk]}</dd>`
                             }
                             opt_text += `</dl></div>`;
-                            document.getElementById(key).innerHTML += opt_text;
                         }
                     }
                     else if(kk === "light_turn" || kk === "light_adjust" || kk === 'window' ){
-                        document.getElementById(key).innerHTML += `${kk}：`;
-                        var opt_text = `<div class="options"><dl>`;
+                        opt_text += `<div class="options"><dl>`;
                         for(var i = 0;i<len;i++){
-                            opt_text += `<dt>The${i}</dt>`;
+                            opt_text += `<dt>The${i}:</dt>`;
                             opt_text += `<dd ondblclick=\"ShowElement(this)\">${json_object[key][kk][i]}</dd>`
                         }
                         opt_text += `</dl></div>`;
-                        document.getElementById(key).innerHTML += opt_text;
                     }
-                    else if( kk === 'temperature' || kk === 'humidity'){
-                        document.getElementById(key).innerHTML += `${kk}：`;
-                        opt_text = '';
+                    else if(kk === 'temperature' || kk === 'humidity'){
+                        opt_text += `<div id="${key}${kk}">`;
                         for(var i = 0;i<len;i++){
-                            opt_text += `The${i} `;
+                            opt_text += `The${i}: `;
                             opt_text += `${json_object[key][kk][i]} `
                         }
-                        document.getElementById(key).innerHTML += opt_text;
+                        opt_text+='<br>';
+                        opt_text += `</div>`;
                     }
+                    else {
+                        continue;
+                    }
+
+                    document.getElementById(key).innerHTML += opt_text;
                 }
                 document.getElementById(key).innerHTML += `<input type="submit" class="${key}" value="Confirm">`;
             }
             first = false;
         }
-        var canvas = document.getElementById('canvas').innerHTML;
+        else {
+            //only update temperature and humidity
+            for (var key in json_object) {//key = ax822k
+                var t = json_object[key].temperature;
+                var h = json_object[key].humidity;
+                console.log(h);
+                //clear old temperature and humidity
+                opt_text = '';
+                for(var i = 0;i<t.length;i++){
+                    opt_text += `The${i}: `;
+                    opt_text += `${t[i]} `
+                }
+                document.getElementById(key+'temperature').innerHTML = opt_text;
+                opt_text = '';
+                for(var i = 0;i<h.length;i++){
+                    opt_text += `The${i}: `;
+                    opt_text += `${h[i]} `
+                }
+                document.getElementById(key+'humidity').innerHTML = opt_text;
+
+            }
+        }
     })
 
 </script>
