@@ -18,8 +18,10 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):#inherit class 
             print(data)
             dec.set_msg(data)
             dec.decode()
+            instruction ={}
             with lock:
-                j_data = dec.to_json()
+                #write data to j_data.json
+                j_data = dec.to_json(type='data')
                 with open("../json/j_data.json", 'r') as load_f:
                     load_dict = json.load(load_f)
 
@@ -28,15 +30,18 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):#inherit class 
                     json.dump(load_dict, f)
                     print("wrote -> ../include/j_data.json")
 
-            cur_thread = threading.current_thread()
-            print(cur_thread.name)
-            response = data
-            # response = ""
-            # if ServerDo.listen_web():
-            #     pass
-            # else:
-            #     response = "#"
-            self.request.sendall(bytes(response, 'ascii'))
+                #read instruction from j_instruction.json
+                with open("../json/j_instruction.json", 'r') as instruction_f:
+                    instruction = json.load(instruction_f)
+            str_instruction = json.dumps(instruction)
+            if len(instruction) > 0 and dec.src_addr == list(instruction.keys())[0]:
+                print("instruction:",instruction, "指令读完了")
+                self.request.sendall(str_instruction.encode())
+            else:
+                print("instruction",instruction,'还没有指令')
+                self.request.sendall(bytes(data, 'ascii'))
+            # cur_thread = threading.current_thread()
+            # print(cur_thread.name)
             time.sleep(1)
 
 

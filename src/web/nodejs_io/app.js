@@ -37,10 +37,16 @@ io.on('connection', socket =>{
     * string : 事件名(任意)
     * data : data got from browser
     * */
-    socket.on('hehe', data =>{
-        console.log(data);
-        socket.emit('send', data);
+    socket.on('instruction', data =>{
+        try {
+            fs.writeFileSync('../../json/j_instruction.json', JSON.stringify(data));
+            console.log("JSON data is saved.");
+        } catch (error) {
+            console.error(error);
+        }
+
     })
+
 });
 var test = 0;
 function read_j_data() {

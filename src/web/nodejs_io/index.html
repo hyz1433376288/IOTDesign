@@ -90,7 +90,7 @@
     var socket = io('http://localhost:3000');
     var first = true;
     var set = false;
-    const INTERVAL = 1300;
+    const INTERVAL = 2000;
     setInterval(function () {
         socket.emit('j_data', "please give me");
     }, INTERVAL);
@@ -99,6 +99,7 @@
         //The 'json_object' is json object from nodejs
         // document.getElementById('humidity').innerText = JSON.stringify(json_object);
         if(first || set){
+            document.getElementById('canvas').innerHTML  = '';
             for (var key in json_object){//key = ax822k
                 document.getElementById('canvas').innerHTML += `<div id="${key}Chart" class="chart"><p>${key}</p><div class="graph"></div></div>`;
 
@@ -110,7 +111,7 @@
                         for(var i=0;i<len;i++){
                             opt_text += `<div class="options">The${i}:<dl>`;
                             for(var kkk in json_object[key][kk][i]){
-                                opt_text += `<dt>${kkk}</dt><dd class="${key}${kk}${i}${kkk}" ondblclick=\"ShowElement(this)\">${json_object[key][kk][i][kkk]}</dd>`
+                                opt_text += `<dt>${kkk}</dt><dd id="${key}${kk}${i}${kkk}" class="${key}${kk}${i}" ondblclick=\"ShowElement(this)\">${json_object[key][kk][i][kkk]}</dd>`
                             }
                             opt_text += `</dl></div>`;
                         }
@@ -119,7 +120,7 @@
                         opt_text += `<div class="options"><dl>`;
                         for(var i = 0;i<len;i++){
                             opt_text += `<dt>The${i}:</dt>`;
-                            opt_text += `<dd class="${key}${kk}${i}" ondblclick=\"ShowElement(this)\">${json_object[key][kk][i]}</dd>`
+                            opt_text += `<dd id="${key}${kk}${i}" class="${key}${kk}${i}" ondblclick=\"ShowElement(this)\">${json_object[key][kk][i]}</dd>`
                         }
                         opt_text += `</dl></div>`;
                     }
@@ -127,7 +128,7 @@
                         opt_text += `<div id="${key}${kk}">`;
                         for(var i = 0;i<len;i++){
                             opt_text += `The${i}: `;
-                            opt_text += `${json_object[key][kk][i]} `
+                            opt_text += `${json_object[key][kk][i]} `;
                         }
                         opt_text+='<br>';
                         opt_text += `</div>`;
@@ -141,6 +142,7 @@
                 document.getElementById(key+'Chart').innerHTML += `<input type="submit" class="${key}Confirm" value="Confirm" onclick="confirm('${key}')">`;
             }
             first = false;
+            set = false;
         }
         else {
             //only update temperature and humidity
@@ -163,13 +165,45 @@
 
             }
         }
+
     })
 
+    function confirm(key) {
+        var devices = ['airconditioner', 'light_turn', 'light_adjust', 'window'];
+        var json_data = {};
+        json_data.des_addr = key;
+        for(j = 0;j<devices.length; j++){//多种设备
+            kk = devices[j];
+            json_data[kk] = [];
+            var i = 0;//每种设备有多个
+            do{
+                if (kk === 'airconditioner'){
+                    var detials = ['mode', 'temperature', 'wind'];
+                    var ac = {};
+                    for(t = 0;t < detials.length; t++){
+                        kkk = detials[t];
+                        console.log(key+kk+i+kkk);
+                        ac[kkk] = parseInt(document.getElementById(key+kk+i+kkk).innerHTML);
+                    }
+                    json_data[kk].push(ac);
+                }
+                else {
+                    console.log(key+kk+i);
+                    json_data[kk].push(parseInt(document.getElementById(key+kk+i).innerHTML));
+                }
+                i++;
+            }
+            while (document.getElementsByClassName(key+kk+i).length)
+        }
+        des_addr = json_data.des_addr;
+        json_res = {};
+        json_res[des_addr] = json_data;
+        set = true;
+        socket.emit('instruction', json_res);
+    }
 </script>
 <script type="text/javascript">
-    function confirm(key) {
 
-    }
 </script>
 <script type="text/javascript" >
     function ShowElement(element) {

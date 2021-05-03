@@ -46,7 +46,9 @@ class Decode:
     def scan_forward(self, length):
         # print(self.msg)
         end = self.msg_ptr + length
+
         if end > len(self.msg):
+            print(end, self.msg, self.msg_ptr)
             print("out of the length of msg")
             return 0
         res = int(self.msg[self.msg_ptr:end])
@@ -65,7 +67,7 @@ class Decode:
         self.humidity[:] = []
         self.humidity_cnt = self.scan_forward(1)
         for i in range(0, self.humidity_cnt):
-            print("humidity.txt")
+            print("humidity")
             self.humidity.append(self.scan_forward(2))
 
     def scan_airconditioner(self):
@@ -108,7 +110,7 @@ class Decode:
         self.scan_light_adjust()
         self.scan_window()
         # return format as json()
-    def to_json(self):
+    def to_json(self,type = "instruction"):
         self.j_data['src_addr'] = self.src_addr
         self.j_data['msg'] = self.msg
         self.j_data['des_addr'] = self.des_addr
@@ -118,6 +120,7 @@ class Decode:
         self.j_data['light_turn'] = self.light_turn
         self.j_data['light_adjust'] = self.light_adjust
         self.j_data['window'] = self.window
+        self.j_data['type'] = type
 
         return self.j_data
 
