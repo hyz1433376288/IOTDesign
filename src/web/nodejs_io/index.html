@@ -5,8 +5,6 @@
     <title>Title</title>
 </head>
 <style>
-
-
 .head{
     background-color: black;
     margin: 0 auto;
@@ -20,20 +18,19 @@
 
 #canvas{
     margin: 0 auto;
-    background: #cccccc;
+    background: white;
 }
 .chart{
      white-space: nowrap;
-    background-color: lavender;
+    /*background-color: lavender;*/
     margin: 10px auto;
+
 }
 .graph{
     margin: 0 auto;
     height: 200px;
-    background-color: #003400;
     white-space: nowrap;
     font-size: 0;
-
 }
 .options{
     white-space: normal;
@@ -58,31 +55,32 @@
     <div class="head">
         <h1>Smart Control System</h1>
     </div>
+    <img src="ideal.png" alt="">
     <div id="canvas">
-        <div class="chart">
-            <p>text</p>
-            <div class="graph">
+<!--        <div class="chart">-->
+<!--            <p>text</p>-->
+<!--            <div class="graph">-->
 
-            </div>
-            <div class="options">
-                <dl>
-                    <dd ondblclick="ShowElement(this)">test</dd>
-                    <dd ondblclick="ShowElement(this)">test</dd>
-                    <dd ondblclick="ShowElement(this)">test</dd>
-                </dl>
-            </div>
-            dd
-            <div class="options">
-                <dl>
+<!--            </div>-->
+<!--            <div class="options">-->
+<!--                <dl>-->
+<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
+<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
+<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
+<!--                </dl>-->
+<!--            </div>-->
+<!--            dd-->
+<!--            <div class="options">-->
+<!--                <dl>-->
 
-                    <dd ondblclick="ShowElement(this)">test</dd>
-                    <dd ondblclick="ShowElement(this)">test</dd>
-                    <dd ondblclick="ShowElement(this)">test</dd>
-                </dl>
-            </div>
-            <button type="submit">Confirm</button>
+<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
+<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
+<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
+<!--                </dl>-->
+<!--            </div>-->
+<!--            <button type="submit">Confirm</button>-->
 
-        </div>
+<!--        </div>-->
     </div>
 </body>
 <script src="/socket.io/socket.io.js"></script>
@@ -90,7 +88,9 @@
     var socket = io('http://localhost:3000');
     var first = true;
     var set = false;
-    const INTERVAL = 2000;
+    var pre_set = false;
+    const INTERVAL = 1500;
+    socket.emit('j_data', "please give me");
     setInterval(function () {
         socket.emit('j_data', "please give me");
     }, INTERVAL);
@@ -101,7 +101,7 @@
         if(first || set){
             document.getElementById('canvas').innerHTML  = '';
             for (var key in json_object){//key = ax822k
-                document.getElementById('canvas').innerHTML += `<div id="${key}Chart" class="chart"><p>${key}</p><div class="graph"></div></div>`;
+                document.getElementById('canvas').innerHTML += `<hr/><div id="${key}Chart" class="chart"><p style="color: red"><strong>${key}</strong></p><div class="graph"><img style="width: 800px;height: 300px;margin-left: 400px;" src="http://p.houyz.cn/uploads/big/50efd440de80870fa71e69462cb40801.png" alt=""></div></div>`;
 
                 console.log(json_object[key]);
                 for (var kk in json_object[key]){
@@ -128,7 +128,9 @@
                         opt_text += `<div id="${key}${kk}">`;
                         for(var i = 0;i<len;i++){
                             opt_text += `The${i}: `;
+                            opt_text += `<span style="color: blue;font-weight: bolder">`
                             opt_text += `${json_object[key][kk][i]} `;
+                            opt_text += `</span>`
                         }
                         opt_text+='<br>';
                         opt_text += `</div>`;
@@ -153,17 +155,28 @@
                 opt_text = '';
                 for(var i = 0;i<t.length;i++){
                     opt_text += `The${i}: `;
-                    opt_text += `${t[i]} `
+                    opt_text += `<span style="color: blue;font-weight: bolder">`;
+                    opt_text += `${t[i]} `;
+                    opt_text += `</span>`;
                 }
                 document.getElementById(key+'temperature').innerHTML = opt_text;
                 opt_text = '';
                 for(var i = 0;i<h.length;i++){
                     opt_text += `The${i}: `;
+                    opt_text += `<span style="color: blue;font-weight: bolder">`;
                     opt_text += `${h[i]} `;
+                    opt_text += `</span>`;
                 }
                 document.getElementById(key+'humidity').innerHTML = opt_text;
 
             }
+        }
+        if (pre_set){
+            set = true;
+            pre_set = false;
+        }
+        else {
+            set = false;
         }
 
     })
@@ -198,30 +211,20 @@
         des_addr = json_data.des_addr;
         json_res = {};
         json_res[des_addr] = json_data;
-        set = true;
+        pre_set = true;
         socket.emit('instruction', json_res);
     }
-</script>
-<script type="text/javascript">
-
 </script>
 <script type="text/javascript" >
     function ShowElement(element) {
     var oldhtml = element.innerHTML;
-    //创建新的input元素
     var newobj = document.createElement('input');
-    //为新增元素添加类型
     newobj.type = 'text';
-    //为新增元素添加value值
     newobj.value = oldhtml;
-    //为新增元素添加光标离开事件
     newobj.onblur = function() {
-        //当触发时判断新增元素值是否为空，为空则不修改，并返回原有值
         element.innerHTML = this.value == oldhtml ? oldhtml : this.value;
-        //当触发时设置父节点的双击事件为ShowElement、也可在这里进行保存动作
         element.setAttribute("ondblclick", "ShowElement(this);");
     }
-    //设置该标签的子节点为空
     element.innerHTML = '';
     //添加该标签的子节点，input对象
     element.appendChild(newobj);

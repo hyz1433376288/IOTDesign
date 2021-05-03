@@ -21,22 +21,11 @@ const io = require('socket.io')(app);//socketio 的对象
 
 io.on('connection', socket =>{
     console.log("new custom connect");
-    //socket.emit 给浏览器发数据，需要触发浏览器注册的某个事件
-    // socket.emit('send', {name: 'zs'});
-    //socket.on注册事件，如果需要获取浏览器数据，就要注册一个时间，等待浏览器触发
-    const INTERVAL = 2000;//设置每2s读一次
-        setInterval(function () {
-            socket.emit('j_data',"please give me");
-        }, INTERVAL);
     socket.on('j_data', data=>{
         console.log(data);
         socket.emit('send_j_data', read_j_data());
     });
-    /*
-    * socket(string ,data)
-    * string : 事件名(任意)
-    * data : data got from browser
-    * */
+
     socket.on('instruction', data =>{
         try {
             fs.writeFileSync('../../json/j_instruction.json', JSON.stringify(data));
@@ -51,10 +40,13 @@ io.on('connection', socket =>{
 var test = 0;
 function read_j_data() {
     const fs = require('fs');
-    let rawdata = fs.readFileSync('../../json/j_data.json');
+    var rawdata;
+    //block if read empty
+    do{
+        rawdata = fs.readFileSync('../../json/j_data.json');
+    }while (rawdata.length === 0)
 
     console.log(rawdata);
-    console.log(test++);
     return JSON.parse(rawdata);
 }
 

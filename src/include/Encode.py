@@ -21,9 +21,9 @@ class Encode:
         self.light_adjust_cnt = light_adjust_cnt
         self.window_cnt = window_cnt
         self.new_temp_humi += str(self.temperature_cnt)
-        self.new_temp_humi += self.__random_data(cnt=self.temperature_cnt, maxv=100, width=3)
+        self.new_temp_humi += self.__random_data(cnt=self.temperature_cnt, maxv=30, width=3, minv=20)
         self.new_temp_humi += str(self.humidity_cnt)
-        self.new_temp_humi += self.__random_data(cnt=self.humidity_cnt, maxv=99, width=2)
+        self.new_temp_humi += self.__random_data(cnt=self.humidity_cnt, maxv=30, width=2, minv=20)
 
         self.new_device_state += str(self.airconditioner_cnt)
         for i in range(self.airconditioner_cnt):
@@ -38,15 +38,15 @@ class Encode:
         self.new_device_state += self.__random_data(cnt=self.window_cnt, maxv=1,width=1)
         self.msg = self.new_temp_humi + self.new_device_state
         print(self.msg)
-    def __random_data(self, cnt, maxv, width):
+    def __random_data(self, cnt, maxv, width, minv=0):
         res = ""
         for i in range(cnt):
             if width == 1:
-                res += "{:0>1d}".format(random.randint(0, maxv))
+                res += "{:0>1d}".format(random.randint(minv, maxv))
             elif width == 2:
-                res += "{:0>2d}".format(random.randint(0, maxv))
+                res += "{:0>2d}".format(random.randint(minv, maxv))
             elif width == 3:
-                res += "{:0>3d}".format(random.randint(0, maxv))
+                res += "{:0>3d}".format(random.randint(minv, maxv))
         # print(res)
         return res
 
@@ -55,9 +55,9 @@ class Encode:
         # update temperature and humidity
         self.new_temp_humi = ""
         self.new_temp_humi += str(self.temperature_cnt)
-        self.new_temp_humi += self.__random_data(cnt=self.temperature_cnt, maxv=100, width=3)
+        self.new_temp_humi += self.__random_data(cnt=self.temperature_cnt, maxv=30, width=3, minv=20)
         self.new_temp_humi += str(self.humidity_cnt)
-        self.new_temp_humi += self.__random_data(cnt=self.humidity_cnt, maxv=99, width=2)
+        self.new_temp_humi += self.__random_data(cnt=self.humidity_cnt, maxv=30, width=2, minv=20)
         # only override temp and humidity while remain device state
         self.msg = self.new_temp_humi + self.new_device_state
         print(self.msg)

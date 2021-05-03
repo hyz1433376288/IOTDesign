@@ -54,6 +54,8 @@ if __name__ == "__main__":
     HOST, PORT = "localhost", 6999
 
     server = ThreadedTCPServer((HOST, PORT), ThreadedTCPRequestHandler)
+    with open('../json/j_data.json', 'w') as f:
+        f.write('{}')
     with server:
         ip, port = server.server_address
         print(ip, port)

@@ -17,7 +17,7 @@ def client(ip, port, mac):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
 
         sock.connect((ip, port))
-        enc = include.Encode.Encode(temperature_cnt=2
+        enc = include.Encode.Encode(temperature_cnt=1
              , humidity_cnt=1
              , airconditioner_cnt=2
              , light_turn_cnt=2
