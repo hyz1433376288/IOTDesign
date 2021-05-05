@@ -4,91 +4,140 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<link rel="stylesheet" href="./static/index.css">
+<!--chart de-->
 <style>
-.head{
-    background-color: black;
-    margin: 0 auto;
-    height: 50px;
-    text-align: center;
+    .highcharts-figure, .highcharts-data-table table {
+  min-width: 320px;
+  max-width: 800px;
+  margin: 1em auto;
 }
-.head h1{
-    font-size: 30px;
-    color: white;
+.container{
+    height: 400px;
 }
 
-#canvas{
-    margin: 0 auto;
-    background: white;
-}
-.chart{
-     white-space: nowrap;
-    /*background-color: lavender;*/
-    margin: 10px auto;
 
+.highcharts-data-table table {
+  font-family: Verdana, sans-serif;
+  border-collapse: collapse;
+  border: 1px solid #EBEBEB;
+  margin: 10px auto;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
 }
-.graph{
-    margin: 0 auto;
-    height: 200px;
-    white-space: nowrap;
-    font-size: 0;
+.highcharts-data-table caption {
+  padding: 1em 0;
+  font-size: 1.2em;
+  color: #555;
 }
-.options{
-    white-space: normal;
-    border:1px solid black;
-    font-size: 14px;
-    box-sizing: border-box;
-    white-space: normal;
-    word-wrap: break-word;
-    word-break: break-all;
-    overflow: hidden;
-    display: inline-block;
-    width: 100px;
-    height: 100%;
-    padding-left: -20px;
-    border: 2px solid black;
+.highcharts-data-table th {
+  font-weight: 600;
+  padding: 0.5em;
 }
-.options dd{
-    margin-left: 10px;
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+  padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+  background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+  background: #f1f7ff;
 }
 </style>
+<style>
+    .head {
+        background-color: black;
+        margin: 0 auto;
+        height: 50px;
+        text-align: center;
+    }
+
+    .head h1 {
+        font-size: 30px;
+        color: white;
+    }
+
+    #canvas {
+        margin: 0 auto;
+        background: white;
+    }
+
+    .chart {
+        white-space: nowrap;
+        /*background-color: lavender;*/
+        margin: 10px auto;
+
+    }
+
+    .graph {
+        margin: 0 auto;
+        height: 200px;
+        white-space: nowrap;
+        font-size: 0;
+    }
+
+    .options {
+        white-space: normal;
+        border: 1px solid black;
+        font-size: 14px;
+        box-sizing: border-box;
+        white-space: normal;
+        word-wrap: break-word;
+        word-break: break-all;
+        overflow: hidden;
+        display: inline-block;
+        width: 100px;
+        height: 100%;
+        padding-left: -20px;
+        border: 2px solid black;
+    }
+
+    .options dd {
+        margin-left: 10px;
+    }
+</style>
 <body>
-    <div class="head">
-        <h1>Smart Control System</h1>
+<div class="head">
+    <h1>Smart Control System</h1>
+</div>
+<!--<figure class="highcharts-figure"><div id="container"></div></figure>-->
+
+<!--    <div id="container"></div>-->
+<!--<div id="container"></div>-->
+    <p class="highcharts-description">
+
+        Chart showing data updating every second, with old data being removed.
+    </p>
+<div id="container"></div>
+<div id="canvas">
+
+    <div class="chart">
+        <p>text</p>
+        <div class="graph">
+            <div class="options">
+                <dl>
+                    <dd ondblclick="ShowElement(this)">test</dd>
+                    <dd ondblclick="ShowElement(this)">test</dd>
+                </dl>
+            </div>
+            <button type="submit">Confirm</button>
+        </div>
     </div>
-    <img src="ideal.png" alt="">
-    <div id="canvas">
-<!--        <div class="chart">-->
-<!--            <p>text</p>-->
-<!--            <div class="graph">-->
-
-<!--            </div>-->
-<!--            <div class="options">-->
-<!--                <dl>-->
-<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
-<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
-<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
-<!--                </dl>-->
-<!--            </div>-->
-<!--            dd-->
-<!--            <div class="options">-->
-<!--                <dl>-->
-
-<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
-<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
-<!--                    <dd ondblclick="ShowElement(this)">test</dd>-->
-<!--                </dl>-->
-<!--            </div>-->
-<!--            <button type="submit">Confirm</button>-->
-
-<!--        </div>-->
-    </div>
+</div>
 </body>
-<script src="/socket.io/socket.io.js"></script>
 <script>
     var socket = io('http://localhost:3000');
     var first = true;
     var set = false;
     var pre_set = false;
+    var chart_map = {};//{'axby28':[t, h]}
+
     const INTERVAL = 1500;
     socket.emit('j_data', "please give me");
     setInterval(function () {
@@ -98,115 +147,116 @@
     socket.on('send_j_data', json_object => {
         //The 'json_object' is json object from nodejs
         // document.getElementById('humidity').innerText = JSON.stringify(json_object);
-        if(first || set){
-            document.getElementById('canvas').innerHTML  = '';
-            for (var key in json_object){//key = ax822k
-                document.getElementById('canvas').innerHTML += `<hr/><div id="${key}Chart" class="chart"><p style="color: red"><strong>${key}</strong></p><div class="graph"><img style="width: 800px;height: 300px;margin-left: 400px;" src="http://p.houyz.cn/uploads/big/50efd440de80870fa71e69462cb40801.png" alt=""></div></div>`;
-
+        if (first || set) {
+            document.getElementById('canvas').innerHTML = '';
+            for (var key in json_object) {//key = ax822k
+                document.getElementById('canvas').innerHTML += `<hr/><div id="${key}Chart" class="chart"><p style="color: red"><strong>${key}</strong></p></div>`;
+                chart_map[key] = [0, 0];
                 console.log(json_object[key]);
-                for (var kk in json_object[key]){
+                for (var kk in json_object[key]) {
                     var len = json_object[key][kk].length;
-                    var opt_text = kk+":";
-                    if(kk === "airconditioner"){
-                        for(var i=0;i<len;i++){
+                    var opt_text = kk + ":";
+                    if (kk === "airconditioner") {
+                        for (i = 0; i < len; i++) {
                             opt_text += `<div class="options">The${i}:<dl>`;
-                            for(var kkk in json_object[key][kk][i]){
+                            for (var kkk in json_object[key][kk][i]) {
                                 opt_text += `<dt>${kkk}</dt><dd id="${key}${kk}${i}${kkk}" class="${key}${kk}${i}" ondblclick=\"ShowElement(this)\">${json_object[key][kk][i][kkk]}</dd>`
                             }
                             opt_text += `</dl></div>`;
                         }
-                    }
-                    else if(kk === "light_turn" || kk === "light_adjust" || kk === 'window' ){
+                    } else if (kk === "light_turn" || kk === "light_adjust" || kk === 'window') {
                         opt_text += `<div class="options"><dl>`;
-                        for(var i = 0;i<len;i++){
+                        for (i = 0; i < len; i++) {
                             opt_text += `<dt>The${i}:</dt>`;
                             opt_text += `<dd id="${key}${kk}${i}" class="${key}${kk}${i}" ondblclick=\"ShowElement(this)\">${json_object[key][kk][i]}</dd>`
                         }
                         opt_text += `</dl></div>`;
-                    }
-                    else if(kk === 'temperature' || kk === 'humidity'){
+                    } else if (kk === 'temperature' || kk === 'humidity') {
+                        if (kk === 'temperature'){
+                            chart_map[key][0] = json_object[key][kk][0];
+                        }
+                        else if(kk === 'humidity'){
+                            chart_map[key][1] = json_object[key][kk][0];
+                        }
                         opt_text += `<div id="${key}${kk}">`;
-                        for(var i = 0;i<len;i++){
+                        for (i = 0; i < len; i++) {
                             opt_text += `The${i}: `;
                             opt_text += `<span style="color: blue;font-weight: bolder">`
                             opt_text += `${json_object[key][kk][i]} `;
                             opt_text += `</span>`
                         }
-                        opt_text+='<br>';
+                        opt_text += '<br>';
                         opt_text += `</div>`;
-                    }
-                    else {
+                    } else {
                         continue;
                     }
 
-                    document.getElementById(key+'Chart').innerHTML += opt_text;
+                    document.getElementById(key + 'Chart').innerHTML += opt_text;
                 }
-                document.getElementById(key+'Chart').innerHTML += `<input type="submit" class="${key}Confirm" value="Confirm" onclick="confirm('${key}')">`;
+                document.getElementById(key + 'Chart').innerHTML += `<input type="submit" class="${key}Confirm" value="Confirm" onclick="confirm('${key}')">`;
             }
             first = false;
             set = false;
-        }
-        else {
+        } else {
             //only update temperature and humidity
             for (var key in json_object) {//key = ax822k
                 var t = json_object[key].temperature;
                 var h = json_object[key].humidity;
                 //clear old temperature and humidity
                 opt_text = '';
-                for(var i = 0;i<t.length;i++){
+                chart_map[key][0]= t[0];
+                chart_map[key][1]= h[0];
+                for (i = 0; i < t.length; i++) {
                     opt_text += `The${i}: `;
                     opt_text += `<span style="color: blue;font-weight: bolder">`;
                     opt_text += `${t[i]} `;
                     opt_text += `</span>`;
                 }
-                document.getElementById(key+'temperature').innerHTML = opt_text;
+                document.getElementById(key + 'temperature').innerHTML = opt_text;
                 opt_text = '';
-                for(var i = 0;i<h.length;i++){
+                for (i = 0; i < h.length; i++) {
                     opt_text += `The${i}: `;
                     opt_text += `<span style="color: blue;font-weight: bolder">`;
                     opt_text += `${h[i]} `;
                     opt_text += `</span>`;
                 }
-                document.getElementById(key+'humidity').innerHTML = opt_text;
+                document.getElementById(key + 'humidity').innerHTML = opt_text;
 
             }
         }
-        if (pre_set){
+        if (pre_set) {
             set = true;
             pre_set = false;
-        }
-        else {
+        } else {
             set = false;
         }
-
     })
 
     function confirm(key) {
         var devices = ['airconditioner', 'light_turn', 'light_adjust', 'window'];
         var json_data = {};
         json_data.des_addr = key;
-        for(j = 0;j<devices.length; j++){//多种设备
+        for (j = 0; j < devices.length; j++) {//多种设备
             kk = devices[j];
             json_data[kk] = [];
             var i = 0;//每种设备有多个
-            do{
-                if (kk === 'airconditioner'){
+            do {
+                if (kk === 'airconditioner') {
                     var detials = ['mode', 'temperature', 'wind'];
                     var ac = {};
-                    for(t = 0;t < detials.length; t++){
+                    for (t = 0; t < detials.length; t++) {
                         kkk = detials[t];
-                        console.log(key+kk+i+kkk);
-                        ac[kkk] = parseInt(document.getElementById(key+kk+i+kkk).innerHTML);
+                        console.log(key + kk + i + kkk);
+                        ac[kkk] = parseInt(document.getElementById(key + kk + i + kkk).innerHTML);
                     }
                     json_data[kk].push(ac);
-                }
-                else {
-                    console.log(key+kk+i);
-                    json_data[kk].push(parseInt(document.getElementById(key+kk+i).innerHTML));
+                } else {
+                    console.log(key + kk + i);
+                    json_data[kk].push(parseInt(document.getElementById(key + kk + i).innerHTML));
                 }
                 i++;
             }
-            while (document.getElementsByClassName(key+kk+i).length)
+            while (document.getElementsByClassName(key + kk + i).length)
         }
         des_addr = json_data.des_addr;
         json_res = {};
@@ -215,28 +265,151 @@
         socket.emit('instruction', json_res);
     }
 </script>
-<script type="text/javascript" >
+
+
+<script>
+        Highcharts.chart('container', {
+            chart: {
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function () {
+
+                        // set up the updating of the chart each second
+                        var series_t = this.series[0];
+                        var series_h = this.series[1];
+                        setInterval(function () {
+                            var x = (new Date()).getTime(),y; // current time
+                            for(var key in chart_map){
+                                t = chart_map[key][0];
+                                h = chart_map[key][1];
+                            }
+                            series_t.addPoint([x, t], true, true);
+                            series_h.addPoint([x, h], true, true);
+                        }, 1000);
+                    }
+                }
+            },
+
+            time: {
+                useUTC: false
+            },
+
+            title: {
+                text: 'Live random data'
+            },
+
+            accessibility: {
+                announceNewData: {
+                    enabled: true,
+                    minAnnounceInterval: 15000,
+                    announcementFormatter: function (allSeries, newSeries, newPoint) {
+                        if (newPoint) {
+                            return 'New point added. Value: ' + newPoint.y;
+                        }
+                        return false;
+                    }
+                }
+            },
+
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+
+            yAxis: {
+                title: {
+                    text: 'Value'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+
+            tooltip: {
+                headerFormat: '<b>{series.name}</b><br/>',
+                pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
+            },
+legend: {
+		layout: 'vertical',
+		align: 'left',
+		x: 120,
+		verticalAlign: 'top',
+		y: 100,
+		floating: true,
+		backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+	},
+            legend: {
+                enabled: false
+            },
+
+            exporting: {
+                enabled: false
+            },
+
+            series: [{
+                name: '温度',
+                data: (function () {
+                    // generate an array of random data
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+
+                    for (i = -10; i <= 0; i += 1) {
+                        data.push({
+                            x: time + i * 1000,
+                            y: Math.random()*30
+                        });
+                    }
+                    return data;
+                }())
+            },
+            {
+                name: '湿度',
+                data: (function () {
+                    // generate an array of random data
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+
+                    for (i = -10; i <= 0; i += 1) {
+                        data.push({
+                            x: time + i * 1000,
+                            y: Math.random()*30
+                        });
+                    }
+                    return data;
+                }())
+            }]
+        });
+    // }
+
+</script>
+<script type="text/javascript">
     function ShowElement(element) {
-    var oldhtml = element.innerHTML;
-    var newobj = document.createElement('input');
-    newobj.type = 'text';
-    newobj.value = oldhtml;
-    newobj.onblur = function() {
-        element.innerHTML = this.value == oldhtml ? oldhtml : this.value;
-        element.setAttribute("ondblclick", "ShowElement(this);");
+        var oldhtml = element.innerHTML;
+        var newobj = document.createElement('input');
+        newobj.type = 'text';
+        newobj.value = oldhtml;
+        newobj.onblur = function () {
+            element.innerHTML = this.value == oldhtml ? oldhtml : this.value;
+            element.setAttribute("ondblclick", "ShowElement(this);");
+        }
+        element.innerHTML = '';
+        //添加该标签的子节点，input对象
+        element.appendChild(newobj);
+        //设置选择文本的内容或设置光标位置（两个参数：start,end；start为开始位置，end为结束位置；如果开始位置和结束位置相同则就是光标位置）
+        newobj.setSelectionRange(0, oldhtml.length);
+        //设置获得光标
+        newobj.focus();
+
+        //设置父节点的双击事件为空
+        newobj.parentNode.setAttribute("ondblclick", "");
+
     }
-    element.innerHTML = '';
-    //添加该标签的子节点，input对象
-    element.appendChild(newobj);
-    //设置选择文本的内容或设置光标位置（两个参数：start,end；start为开始位置，end为结束位置；如果开始位置和结束位置相同则就是光标位置）
-    newobj.setSelectionRange(0, oldhtml.length);
-    //设置获得光标
-    newobj.focus();
-
-    //设置父节点的双击事件为空
-    newobj.parentNode.setAttribute("ondblclick", "");
-
-}
 
 </script>
 </html>
